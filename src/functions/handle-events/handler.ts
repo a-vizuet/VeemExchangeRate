@@ -140,7 +140,7 @@ export const handleEvents = httpErrorHandler(
           }
         );
 
-        res.status(400).send({ message: 'Invalid action to handle' });
+        res.status(200).send({ message: 'Invalid action to handle' });
       } catch (error) {
         logger.log({ message: JSON.stringify((error as AxiosError).toJSON()) });
         res.status(500).send({ message: 'Something failed...' });
