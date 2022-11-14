@@ -12,14 +12,16 @@
   },
   "devDependencies": {
     "@serverless/typescript": "^2.23.0",
+    "@types/axios": "^0.14.0",
     "@types/express": "^4.17.11",
     "@types/node": "^14.14.25",
+    "axios": "^1.1.3",
     "express": "^4.17.1",
     "serverless": "^2.23.0",
     "serverless-google-cloudfunctions": "^4.0.0",
     "serverless-webpack": "^5.3.5",
     "ts-loader": "^8.0.15",
-    "ts-node": "^9.1.1",
+    "ts-node": "^10.9.1",
     "tsconfig-paths": "^3.9.0",
     "tsconfig-paths-webpack-plugin": "^3.3.0",
     "typescript": "^4.1.3",
@@ -27,5 +29,8 @@
     "webpack-node-externals": "^2.5.2"
   },
   "author": "Corentin Doué",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.1.3"
+  }
 }

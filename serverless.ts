@@ -2,7 +2,7 @@ import { functions } from '@functions/config';
 
 const serverlessConfiguration = {
   service: 'veemexchangerate',
-  frameworkVersion: '3',
+  frameworkVersion: '2',
   custom: {
     webpack: {
       webpackConfig: './webpack.config.js',
@@ -12,9 +12,9 @@ const serverlessConfiguration = {
   plugins: ['serverless-google-cloudfunctions', 'serverless-webpack'],
   provider: {
     name: 'google',
-    runtime: 'nodejs14',
-    region: 'europe-west1',
-    project: '<your-gcp-project-id>',
+    runtime: 'nodejs16',
+    region: 'us-central1',
+    project: 'veemcurrencyquote',
   },
   functions,
 };

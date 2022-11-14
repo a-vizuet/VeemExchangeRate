@@ -60,6 +60,12 @@ resource "google_cloudfunctions_function" "handle_events_function" {
     secret = google_secret_manager_secret.telegram-token.secret_id
     version = google_secret_manager_secret_version.telegram_token_value.version
   }
+
+  secret_environment_variables {
+    key = "veemToken"
+    secret = google_secret_manager_secret.veem-token.secret_id
+    version = google_secret_manager_secret_version.veem_token_value.version
+  }
 }
 
 resource "google_cloudfunctions_function_iam_member" "function_invoker" {
