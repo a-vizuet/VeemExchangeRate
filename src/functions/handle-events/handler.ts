@@ -29,7 +29,7 @@ type Body = {
 type Request = ExpressRequest<Record<string, string>, void, Body>;
 
 const regex =
-  /^\/quote (?<countryFrom>\w{1,}) (?<currencyFrom>\w{1,}) (?<countryDestination>\w{1,}) (?<currencyDestination>\w{1,}) (?<quantity>\d{1,})$/gm;
+  /^\/quote (?<currencyFrom>\w+) (?<countryDestination>\w+) (?<currencyDestination>\w+) (?<quantity>\d+\.?\d?)$/gm;
 
 export const handleEvents = httpErrorHandler(
   async (req: Request, res: Response): Promise<void> => {
@@ -65,27 +65,15 @@ export const handleEvents = httpErrorHandler(
     const parsedMessage = message
       .replaceAll(
         regex,
-        (
-          _,
-          countryFrom,
-          currencyFrom,
-          countryDestination,
-          countryCurrency,
-          quantity
-        ) =>
-          [
-            countryFrom,
-            currencyFrom,
-            countryDestination,
-            countryCurrency,
-            quantity,
-          ].join()
+        (_, currencyFrom, countryDestination, countryCurrency, quantity) =>
+          [currencyFrom, countryDestination, countryCurrency, quantity].join()
       )
       .split(',');
 
+    console.log(parsedMessage);
+
     if (parsedMessage.length > 1) {
-      const [_, fromCurrency, toCountry, toCurrency, fromAmount] =
-        parsedMessage;
+      const [fromCurrency, toCountry, toCurrency, fromAmount] = parsedMessage;
 
       let messageToSend;
 
@@ -113,6 +101,7 @@ export const handleEvents = httpErrorHandler(
         res.status(200).send({ message: 'Handled but something happened...' });
       }
 
+      console.log(messageToSend);
       if (messageToSend) {
         try {
           await axios.post(
