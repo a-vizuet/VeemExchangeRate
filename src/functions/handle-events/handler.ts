@@ -125,7 +125,7 @@ export const handleEvents = httpErrorHandler(
           {
             chat_id,
             text: `Didn't understand your message.
-            Try sending your message in a format like /quote {countryFrom} {currencyFrom} {countryDestination} {currencyDestination} {quantity}`,
+            Try sending your message in a format like /quote {currencyFrom} {countryDestination} {currencyDestination} {quantity}`,
           }
         );
 
