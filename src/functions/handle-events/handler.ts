@@ -2,6 +2,7 @@ import type { Request as ExpressRequest, Response } from 'express';
 import { httpErrorHandler } from '@libs/error-handler';
 import axios, { AxiosError } from 'axios';
 import { logger } from '../../libs/logs';
+import { randomUUID } from 'crypto';
 
 type Body = {
   eventType?: 'SET_WEBHOOK';
@@ -82,9 +83,6 @@ export const handleEvents = httpErrorHandler(
       )
       .split(',');
 
-    console.log(message)
-    console.log(parsedMessage)
-
     if (parsedMessage.length > 1) {
       const [_, fromCurrency, toCountry, toCurrency, fromAmount] =
         parsedMessage;
@@ -92,19 +90,18 @@ export const handleEvents = httpErrorHandler(
       let messageToSend;
 
       try {
-        const {
-          data: { toAmount, rate },
-        } = await axios.post(
+        const { data } = await axios.post(
           'https://sandbox-api.veem.com/veem/v1.1/exchangerates/quotes',
           { fromAmount, fromCurrency, toCountry, toCurrency },
           {
             headers: {
               authorization: `Bearer ${process.env.veemToken}`,
+              'X-REQUEST-ID': randomUUID(),
             },
           }
         );
 
-        messageToSend = `${toAmount} ${toCurrency} @ ${rate}`;
+        messageToSend = `${data.toAmount} ${toCurrency} @ ${data.rate}`;
       } catch (error) {
         await axios.post(
           `https://api.telegram.org/bot${process.env.telegramToken}/sendMessage`,
@@ -116,19 +113,21 @@ export const handleEvents = httpErrorHandler(
         res.status(200).send({ message: 'Handled but something happened...' });
       }
 
-      try {
-        await axios.post(
-          `https://api.telegram.org/bot${process.env.telegramToken}/sendMessage`,
-          {
-            chat_id,
-            text: messageToSend,
-          }
-        );
-        res.status(200).send({ message: 'Handled!' });
-      } catch (error) {
-        console.log((error as AxiosError).toJSON());
-        // logger.log({ message: JSON.stringify((error as AxiosError).toJSON()) });
-        res.status(500).send({ message: 'Something failed...' });
+      if (messageToSend) {
+        try {
+          await axios.post(
+            `https://api.telegram.org/bot${process.env.telegramToken}/sendMessage`,
+            {
+              chat_id,
+              text: messageToSend,
+            }
+          );
+          res.status(200).send({ message: 'Handled!' });
+        } catch (error) {
+          // console.log((error as AxiosError).toJSON());
+          // logger.log({ message: JSON.stringify((error as AxiosError).toJSON()) });
+          res.status(500).send({ message: 'Something failed...' });
+        }
       }
     } else {
       try {
